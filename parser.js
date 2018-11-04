@@ -3,29 +3,19 @@ const excelToJson = require('convert-excel-to-json');
 const readline = require('readline-sync');
 
 
-//const LABELS_STRING = readline.question("Enter labels");
-//console.log(LABELS_STRING);
-//const linkRange = readline.question("What is the link range? (ex:B66:C85)");
-
-// const parsedExcel = excelToJson({
-// 	sourceFile: 'test_config.xlsx',
-// 	range: linkRange, //'B82:C86'
-// 	sheets: ['themeConfig Request']
-// });
-
 
 //const LABELS_STRING = "Products Applications Support";
 let linksArr = [];
 let namesArr = [];
 
 let labelsArr = [];
-let parsedSegments = [];
+//let parsedSegments = [];
 let idsArr = [];
 let idString = "";
 let labelText = [];
 let categoriesText = [];
 
-parsedSegments = [ 
+let parsedSegments = [ 
 	{"themeConfig Request":
 		[
 			{
@@ -85,10 +75,11 @@ function createSegments() {
 		});
 		parsedSegments.push(segment)
 	}
-	console.log(JSON.stringify(parsedSegments));
+	//console.log(JSON.stringify(parsedSegments));
+	parseSsnObject(parsedSegments);
 }
 
-function storeLabels(parsedSegments) {
+function parseSsnObject(parsedSegments) {
 	//iterate through all the objects in the parsedSegments array
 	parsedSegments.forEach(element => {
 		let valuesObj = (Object.values(element));
@@ -98,29 +89,46 @@ function storeLabels(parsedSegments) {
 				let labelObj = valuesObj[key];
 				//console.log(labelObj);
 				//console.log(labelObj[0]);
-				let label = labelObj[0].B
+				let label = labelObj[0].B;
+				
+				let labelText = `psn.manual.${label.substr(0,4).toLowerCase()}.name = ${label}`;
+				let labelTextUrl = `psn.manual.${label.substr(0,4).toLowerCase()}.url = #`;
+				
 				
 				
 				//console.log(label);
 				labelsArr.push(label);
+				categoriesText.push(labelText, labelTextUrl)
+
 				for (let i = 0; i<labelObj.length; i++) {
 					
 					if (!i==0) {
+						
 						let linkName = labelObj[i].B;
-						let linkUrl = labelObj[i].C;
-						namesArr.push(linkName);
-						linksArr.push(linkUrl);
+						let linkUrl = testUrlBrackets(labelObj[i].C);
+						
+						genSsnText(label, linkName, linkUrl, i);
 					}
 				}
 			}
 		}
 		
 	});
-
+	genIdString(labelsArr)
+	console.log(categoriesText);
 	//console.log(labelsArr);
 	//console.log(namesArr);
 	//console.log(linksArr);
-	console.log(genSsnLinks(labelsArr, linksArr, namesArr));
+	
+}
+function genSsnText(label, linkName, linkUrl, i) {
+	
+	let nameText = `psn.manual.${label.substr(0,4).toLowerCase()}.name.${i} = ${linkName}`;
+	let urlText = `psn.manual.${label.substr(0,4).toLowerCase()}.url.${i} = ${linkUrl}`;
+
+	categoriesText.push(nameText, urlText);
+	
+	
 }
 
 //function to generate ssn id string
@@ -128,58 +136,33 @@ function genIdString (labelsArr) {
 	idString = `psn.manual.ids = ${labelsArr.map(
 		(val) => val.substr(0,4)
 	).join(", ").toLowerCase()}`;
-	console.log(idString);
+	//console.log(idString);
+	categoriesText.unshift(idString);
 	return idString;
 }
-//save labels to an array
-
-function storeIds(labelsArr) {
-	
-	idsArr = labelsArr.map((val) =>
-		val.substr(0,4).toLowerCase()
-	);
-	console.log(idsArr);
-	return idsArr;
-}
-
-function genSsnLabels(labelsArr, idsArr) {
-	
-	//loop through labels and generate text segment for each
-		
-	labelText = labelsArr.map((val,index)=> {
-		let mappedStr = "";
-		mappedStr = `psn.manual.${idsArr[index].substr(0,4).toLowerCase()}.name = ${val}`
-	
-		return mappedStr;
-	})
-	console.log(labelText);
-	//console.log(labelsArr, idsArr);
-	return labelText;
-}
-function genSsnLinks(labelsArr, linksArr, namesArr) {
-	let nameText = "";
-	let urlText = "";
-	//loop through the labels
-	for(let i=0; i<labelsArr.length;i++){
-		//loop through labels and generate text segment for each
-		for (let ii=0; ii<linksArr.length; ii++) {
-			nameText = `psn.manual.${labelsArr[i].substr(0,4).toLowerCase()}.name = ${namesArr[ii]}`
-			urlText = `psn.manual.${labelsArr[i].substr(0,4).toLowerCase()}.url = ${linksArr[ii]}`
-			
-			categoriesText.push(nameText, urlText);
-		}
+function testUrlBrackets(url) {
+	let newUrl = "";
+	if (url[0] !== "[") {
+		url = `[${url}`;
 	}
-	console.log(categoriesText);
+	if (!url.includes("?N") && url.charAt(url.length - 1) != "]") {
+		url = `${url}]`;
+	}
+	if (url.includes("?N") && !url.includes("]?N")) {
+		let insertBracketAt = url.indexOf("?N");
+		url = url.slice(0, insertBracketAt) + "]" + url.slice(insertBracketAt);
+		// console.log(insertBracketAt);
+	}
+	if(url[1] != "U") {
+		
+		url = url.slice(0, 1) + "URL." + url.slice(1);
+	}
+	console.log(url);
+	return url;
 }
+//testUrlBrackets("[CORP_FUZEExp_JP_All3MProducts?N=5002385+8710669+8711017+8721561+3294803017&rt=r3")
 
 
+createSegments()
+//parseSsnObject(parsedSegments);
 
-
-//console.log(parsedExcel);
-//createSegments()
-storeLabels(parsedSegments);
-//storeIds(storeLabels(LABELS_STRING));
-
-//genIdString(labelsArr)
-// genSsnCategory(labelsArr, idsArr);
-// genSsnLinks(labelsArr, linksArr);
