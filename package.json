@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/tmstani23/site-config-parser#readme",
   "dependencies": {
+    "chalk": "^2.4.1",
     "convert-excel-to-json": "^1.4.1",
     "readline-sync": "^1.4.9"
   }
