@@ -1,0 +1,24 @@
+{
+  "name": "site-config-parser",
+  "version": "1.0.0",
+  "description": "A tool used for parsing excel files into json objects and converting them to site configuration format.",
+  "main": "parser.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tmstani23/site-config-parser.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tmstani23/site-config-parser/issues"
+  },
+  "homepage": "https://github.com/tmstani23/site-config-parser#readme",
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "convert-excel-to-json": "^1.4.1",
+    "readline-sync": "^1.4.9"
+  }
+}
