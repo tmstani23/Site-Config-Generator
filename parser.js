@@ -3,19 +3,11 @@ const excelToJson = require('convert-excel-to-json');
 const readline = require('readline-sync');
 const chalk = require('chalk');
 
-
-
-//const LABELS_STRING = "Products Applications Support";
-let linksArr = [];
-let namesArr = [];
 let isEnglish = true;
 let labelsArr = [];
 let itemLabels = [];
-//let parsedSegments = [];
-let idsArr = [];
 let idString = "";
-let labelText = [];
-let categoriesText = [];
+let ssnText = [];
 
 let parsedSegments = [ 
 	{"themeConfig Request":
@@ -66,70 +58,69 @@ let parsedSegments = [
 // B46:C50
 // B51:C54
 // B55:C56
-
-function setLanguage (ssnLanguage) {
-	if(ssnLanguage === "no") {
-		isEnglish = false;
-	}
+//Set language variable to false if ssnLanguage = "no"
+const setLanguage = () => { 
+	//Take user input from console and save to a variable:
+	const ssnLanguage = readline.question("Is the SSN in English? (yes/no)");
+	ssnLanguage === "no" ? isEnglish = false : isEnglish = true;
+	return createSegments();
 }
 
 function createSegments() {
 	parsedSegments = [];
-	const ssnLanguage = readline.question("Is the SSN in English? (yes/no)");
-	//set language if not english:
-	setLanguage(ssnLanguage);
+	
+	//Store number of labels to parse from ssn as a variable:
 	const numLabels = readline.question("How many labels are there?");
+	//Parse each segment of the excel file based on the number of labels
 	for(let i=0; i<numLabels; i++) {
+		//parse each range into a separate object
 		let labelRange = readline.question("What is the range of the label and its links? (ex:B66:C85)");
 		let segment = excelToJson({
 			sourceFile: 'test_config.xlsx',
 			range: labelRange, //'B82:C86'
 			sheets: ['themeConfig Request']
 		});
+		//Add each object to the parsedSegments array
 		parsedSegments.push(segment)
 	}
 	//console.log(JSON.stringify(parsedSegments));
-	parseSsnObject(parsedSegments);
+	return parseSsnObject(parsedSegments);
 }
 
 function parseSsnObject(parsedSegments) {
 	//iterate through all the objects in the parsedSegments array
 	parsedSegments.forEach((element, index) => {
 		let valuesObj = (Object.values(element));
-		
+		//loop through each key in each object
 		for (var key in valuesObj) {
 			if (valuesObj.hasOwnProperty(key)) {
 				let labelObj = valuesObj[key];
-				//console.log(labelObj);
-				//console.log(labelObj[0]);
-				 
-				
+				//Set header label
 				let label = labelObj[0].B;
 				let item = "";
-				
-				
+				//Set header text name and url
 				let labelText = `psn.manual.${label.substr(0,4).toLowerCase()}.name = ${label}`;
 				let labelTextUrl = `psn.manual.${label.substr(0,4).toLowerCase()}.url = #`;
-				
-				
+				//Adjust label text and url if the ssn is not in English
 				if(isEnglish === false) {
 					item = `item${index}`;
 					labelText = `psn.manual.item${index}.name = ${label}`;
 					labelTextUrl = `psn.manual.item${index}.url = #`;
 					itemLabels.push(item);
 				}
-				//console.log(label);
+				//Add the header labels to a labels array
 				labelsArr.push(label);
-				
-				categoriesText.push(labelText, labelTextUrl)
-
+				//Add the parsed names and urls to the final ssn text array
+				ssnText.push(labelText, labelTextUrl)
+				//Loop through each label object
 				for (let i = 0; i<labelObj.length; i++) {
-					
+					//If not the first label which is the header:
 					if (!i==0) {
-						
+						//set link name and url
 						let linkName = labelObj[i].B;
+						//format the url to fit standards
 						let linkUrl = formatUrl(labelObj[i].C);
-						
+						//generate the remaining ssn text
 						genSsnText(label, linkName, linkUrl, i, item);
 					}
 				}
@@ -137,9 +128,15 @@ function parseSsnObject(parsedSegments) {
 		}
 		
 	});
+	//generate the id string
 	genIdString(labelsArr, itemLabels)
-	let parsedSsn = categoriesText.join("\n");
-	console.log(chalk.magenta(parsedSsn));
+	//join the final array and separate each array element with a new line
+	let parsedSsn = ssnText.join("\n");
+	
+	
+	console.log(chalk.blue(parsedSsn));
+	
+	
 	//console.log(labelsArr);
 	//console.log(namesArr);
 	//console.log(linksArr);
@@ -161,7 +158,7 @@ function genSsnText(label, linkName, linkUrl, i, item) {
 		
 	}
 
-	categoriesText.push(nameText, urlText);
+	ssnText.push(nameText, urlText);
 	
 	
 }
@@ -179,7 +176,7 @@ function genIdString (labelsArr, itemLabels) {
 	}
 	
 	//console.log(idString);
-	categoriesText.unshift(idString);
+	ssnText.unshift(idString);
 	return idString;
 }
 function formatUrl(url) {
@@ -193,19 +190,17 @@ function formatUrl(url) {
 	if (url.includes("?N") && !url.includes("]?N")) {
 		let insertBracketAt = url.indexOf("?N");
 		url = url.slice(0, insertBracketAt) + "]" + url.slice(insertBracketAt);
-		// console.log(insertBracketAt);
 	}
 	if(url[1] != "U") {
-		
 		url = url.slice(0, 1) + "URL." + url.slice(1);
 	}
-	
-	//console.log(url);
+	//console.log(url)
 	return url;
 }
 //formatUrl("[CORP_FUZEExp_JP_All3MProducts?N=5002385+8710669+8711017+8721561+3294803017&rt=r3")
 
 
-createSegments()
+//createSegments()
 //parseSsnObject(parsedSegments);
+setLanguage();
 
