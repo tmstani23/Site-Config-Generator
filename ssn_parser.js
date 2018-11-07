@@ -9,6 +9,8 @@ let itemLabels = [];
 let idString = "";
 let ssnText = [];
 
+//add path that includes all files in/config to use as a variable in parseSegments
+
 let parsedSegments = [ 
 	{"themeConfig Request":
 		[
@@ -61,7 +63,7 @@ let parsedSegments = [
 //Set language variable to false if ssnLanguage = "no"
 const setLanguage = () => { 
 	//Take user input from console and save to a variable:
-	const ssnLanguage = readline.question("Is the SSN in English? (yes/no)");
+	const ssnLanguage = readline.question("Is the ssn without logogram symbols? (yes/no)");
 	ssnLanguage === "no" ? isEnglish = false : isEnglish = true;
 	return createSegments();
 }
@@ -76,7 +78,7 @@ function createSegments() {
 		//parse each range into a separate object
 		let labelRange = readline.question("What is the range of the label and its links? (ex:B66:C85)");
 		let segment = excelToJson({
-			sourceFile: 'test_config2.xlsx',
+			sourceFile: "test_config3.xlsx",
 			range: labelRange, //'B82:C86'
 			sheets: ['themeConfig Request']
 		});
@@ -99,13 +101,16 @@ function parseSsnObject(parsedSegments) {
 				let label = labelObj[0].B;
 				let item = "";
 				//Set header text name and url
-				let labelText = `psn.manual.${label.substr(0,4).toLowerCase()}.name = ${label}`;
+let labelText = `
+psn.manual.${label.substr(0,4).toLowerCase()}.name = ${label}`;
 				let labelTextUrl = `psn.manual.${label.substr(0,4).toLowerCase()}.url = #`;
 				//Adjust label text and url if the ssn is not in English
 				if(isEnglish === false) {
 					item = `item${index}`;
 					labelText = `psn.manual.item${index}.name = ${label}`;
-					labelTextUrl = `psn.manual.item${index}.url = #`;
+					labelTextUrl = `psn.manual.item${index}.url = #
+					
+					`;
 					itemLabels.push(item);
 				}
 				//Add the header labels to a labels array
@@ -191,7 +196,7 @@ function formatUrl(url) {
 		url = `[${url}`;
 	}
 	//if the url includes ?N and not ~ add a bracket at the end of the url
-	if (!url.includes("?N") && url.charAt(url.length - 1 != "]") && !url.includes("~")) {
+	if (!url.includes("?N") && url.charAt(url.length - 1) != "]" && !url.includes("~")) {
 		url = `${url}]`;
 	}
 	//if the url includes ?N and not ]?N and not a ~ add a bracket before the ?N
@@ -208,6 +213,8 @@ function formatUrl(url) {
 	if(url[1] != "U") {
 		url = url.slice(0, 1) + "URL." + url.slice(1);
 	}
+	console.log(url.charAt(url.length - 1))
+	console.log(url);
 	return url;
 }
 //formatUrl("[CORP_FUZEExp_JP_All3MProducts?N=5002385+8710669+8711017+8721561+3294803017&rt=r3")
@@ -216,5 +223,6 @@ function formatUrl(url) {
 
 //createSegments()
 //parseSsnObject(parsedSegments);
+//formatUrl("[URL.SGB_CommercialCleaning_IN_Resources_ResourcesLibrary]")
 setLanguage();
 

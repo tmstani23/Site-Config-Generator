@@ -18,7 +18,7 @@ let parsedSegments = [];
 //Set language variable to false if footer Language = "no"
 const setLanguage = () => { 
 	//Take user input from console and save to a variable:
-	const footerLanguage = readline.question("Is the Footer in English? (yes/no)");
+	const footerLanguage = readline.question("Is the footer without logogram symbols? (yes/no)");
 	footerLanguage === "no" ? isEnglish = false : isEnglish = true;
 	return createSegments();
 }
@@ -33,7 +33,7 @@ function createSegments() {
 		//parse each range into a separate object
 		let labelRange = readline.question("What is the range of the label and its links? (ex:B66:C85)");
 		let segment = excelToJson({
-			sourceFile: 'test_config2.xlsx',
+			sourceFile: 'test_config3.xlsx',
 			range: labelRange, //'B82:C86'
 			sheets: ['themeConfig Request']
 		});
@@ -55,28 +55,30 @@ function parseFooterObject(parsedSegments) {
 				//Set header label
 				let label = labelObj[0].B;
 				let item = "";
-				//Set header text name and url
-				// let labelText = `psn.manual.${label.substr(0,4).toLowerCase()}.name = ${label}`;
-				// let labelTextUrl = `psn.manual.${label.substr(0,4).toLowerCase()}.url = #`;
-				// //Adjust label text and url if the footer is not in English
+				//If not english set label to item plus an index
 				if(isEnglish === false) {
 					item = `item${index}`;
-					//labelText = `psn.manual.item${index}.name = ${label}`;
-					//labelTextUrl = `psn.manual.item${index}.url = #`;
+					//save item labels to an array
 					itemLabels.push(item);
+					//add footer label identifier to each section
+footerText.push(`
+#${itemLabels[index]}`)
 				}
+				
 				//Add the header labels to a labels array
 				labelsArr.push(label);
-				//Add the parsed names and urls to the final footer text array
-				//footerText.push(labelText, labelTextUrl)
+				//add footer label identifier to each section and save to footer text array:
+footerText.push(`
+#${labelsArr[index]}`)
 				//Loop through each label object
 				for (let i = 0; i<labelObj.length; i++) {
 					//If not the first label which is the header:
 					if (!i==0) {
-						//set link name and url
+						//set link name and url to the object value with key B
 						let linkName = labelObj[i].B;
-						//format the url to fit standards
+						//format the url at key C to fit standards
 						let linkUrl = formatUrl(labelObj[i].C);
+						
 						//generate the remaining footer text
 						genfooterText(label, linkName, linkUrl, i, item);
 					}
@@ -89,13 +91,8 @@ function parseFooterObject(parsedSegments) {
 	genIdString(labelsArr, itemLabels)
 	//join the final array and separate each array element with a new line
 	let parsedfooter = footerText.join("\n");
-	
 	console.log(chalk.blue(parsedfooter));
 	
-	
-	//console.log(labelsArr);
-	//console.log(namesArr);
-	//console.log(linksArr);
 	return parsedfooter;
 	
 }
@@ -116,9 +113,7 @@ function genfooterText(label, linkName, linkUrl, i, item) {
 		
 	}
 	//Save the name and link text to the footer text array
-	footerText.push(nameText, urlText);
-	
-	
+	footerText.push(nameText, urlText);		
 }
 
 //function to generate footer id string
@@ -157,8 +152,8 @@ function parseSiteName() {
 			if (valuesObj.hasOwnProperty(key)) {
                 let labelObj = valuesObj[key];
 				//Set header label
-				label = labelObj[0].B;
-                console.log(label);
+				label = `footer.site.name = ${labelObj[0].B}`
+                //console.log(label);
                 
             }    
         }
@@ -178,7 +173,7 @@ function formatUrl(url) {
 		url = `[${url}`;
 	}
 	//if the url includes ?N and not ~ add a bracket at the end of the url
-	if (!url.includes("?N") && url.charAt(url.length - 1 != "]") && !url.includes("~")) {
+	if (!url.includes("?N") && url.charAt(url.length - 1) != "]" && !url.includes("~")) {
 		url = `${url}]`;
 	}
 	//if the url includes ?N and not ]?N and not a ~ add a bracket before the ?N
@@ -195,6 +190,7 @@ function formatUrl(url) {
 	if(url[1] != "U") {
 		url = url.slice(0, 1) + "URL." + url.slice(1);
 	}
+	//console.log(url);
 	return url;
 }
 //formatUrl("[CORP_FUZEExp_JP_All3MProducts?N=5002385+8710669+8711017+8721561+3294803017&rt=r3")
@@ -204,4 +200,5 @@ function formatUrl(url) {
 //createSegments()
 //parsefooterObject(parsedSegments);
 setLanguage();
+//formatUrl("Käyttökohteet")
 
