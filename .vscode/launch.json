@@ -16,7 +16,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}\\footer_parser.js",
+            "program": "${workspaceFolder}\\ssn_parser.js",
             "console": "integratedTerminal"
         }
     ]

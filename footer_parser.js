@@ -1,7 +1,10 @@
+
+
 'use strict';
 const excelToJson = require('convert-excel-to-json');
 const readline = require('readline-sync');
 const chalk = require('chalk');
+var exports = module.exports = {};
 
 let isEnglish = true;
 let labelsArr = [];
@@ -10,13 +13,30 @@ let idString = "";
 let footerText = [];
 let parsedSegments = [];
 
-
+var walkSync = function(dir, filelist) {
+	var path = path || require('path');
+	var fs = fs || require('fs'),
+		files = fs.readdirSync(dir);
+	filelist = filelist || [];
+	files.forEach(function(file) {
+	  if (fs.statSync(path.join(dir, file)).isDirectory()) {
+		filelist = walkSync(path.join(dir, file), filelist);
+	  }
+	  if (filelist.length === 1) {
+		return filelist;
+	  }
+	  else {
+		filelist.push(file);
+	  }
+	});
+	return filelist;
+};
 // B82:C86
 // B110:C111
 
 
 //Set language variable to false if footer Language = "no"
-const setLanguage = () => { 
+exports.setLanguage = function() { 
 	//Take user input from console and save to a variable:
 	const footerLanguage = readline.question("Is the footer without logogram symbols? (yes/no)");
 	footerLanguage === "no" ? isEnglish = false : isEnglish = true;
@@ -33,7 +53,7 @@ function createSegments() {
 		//parse each range into a separate object
 		let labelRange = readline.question("What is the range of the label and its links? (ex:B66:C85)");
 		let segment = excelToJson({
-			sourceFile: 'test_config3.xlsx',
+			sourceFile: walkSync("config").join(""),
 			range: labelRange, //'B82:C86'
 			sheets: ['themeConfig Request']
 		});
@@ -138,35 +158,43 @@ function genIdString (labelsArr, itemLabels) {
 function parseSiteName() {
     let siteNameRange = readline.question("What is the range of the footer site name label? (ex:B79:B79)");
     let parsedSiteName = [];
-    let label = "";
-    let siteName = excelToJson({
-        sourceFile: 'test_config2.xlsx',
+	let label = "";
+	let siteNameText = "";
+    let siteNameSegment = excelToJson({
+        sourceFile: walkSync("config").join(""),
         range: siteNameRange, //'B82:C86'
         sheets: ['themeConfig Request']
-    });
-    parsedSiteName.push(siteName);
-    parsedSiteName.forEach((element, index) => {
-		let valuesObj = (Object.values(element));
-		//loop through each key in each object
-		for (var key in valuesObj) {
-			if (valuesObj.hasOwnProperty(key)) {
-                let labelObj = valuesObj[key];
-				//Set header label
-				label = `footer.site.name = ${labelObj[0].B}`
-                //console.log(label);
+	});
+	//
+	console.log(siteNameSegment)
+	parsedSiteName.push(siteNameSegment);
+
+    // parsedSiteName.forEach((element, index) => {
+	// 	let valuesObj = (Object.values(element));
+	// 	console.log(valuesObj);
+	// 	//loop through each key in each object
+	// 	for (var key in valuesObj) {
+	// 		if (valuesObj.hasOwnProperty(key)) {
+	// 			let labelObj = valuesObj[key];
+	// 			let label = labelObj[0].B;
+	// 			//Set the footer site name text
+			
+	// 			siteNameText = `footer.site.name = ${label}`;
+				
+    //             //console.log(label);
                 
-            }    
-        }
-    })            
+    //         }    
+    //     }
+    // })            
     //console.log(siteName);
-    return label;
+    return siteNameText;
     //console.log(siteName.values.keys.B)
 
 }
 //Format the urls based on correct snn url format
 function formatUrl(url) {
 	//if no bracket at beginning of url add one
-    if(url === "undefined") {
+    if(url === undefined) {
         return;
     }
     if (url[0] !== "[") {
@@ -193,12 +221,14 @@ function formatUrl(url) {
 	//console.log(url);
 	return url;
 }
+
 //formatUrl("[CORP_FUZEExp_JP_All3MProducts?N=5002385+8710669+8711017+8721561+3294803017&rt=r3")
 //console.log(formatUrl("URL.CORP_FUZEExp_US_All3MProducts~/All-3M-Products/Home-Care-Cleaning/Consumer/?N=5002385+8709316+8710658+8711017+3294857497&rt=r3"));
 // URL.CORP_FUZEExp_US_All3MProducts]~/All-3M-Products/Home-Care-Cleaning/Consumer/?N=5002385+8709316+8710658+8711017+3294857497&rt=r3
 //parseSiteName();
 //createSegments()
 //parsefooterObject(parsedSegments);
-setLanguage();
+exports.setLanguage();
+
 //formatUrl("Käyttökohteet")
 

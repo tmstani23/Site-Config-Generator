@@ -2,6 +2,32 @@
 const excelToJson = require('convert-excel-to-json');
 const readline = require('readline-sync');
 const chalk = require('chalk');
+const footerParser = require('./footer_parser.js');
+//requiring path and fs modules
+var path = path || require('path');
+var fs = fs || require('fs');
+
+
+var walkSync = function(dir, filelist) {
+	var path = path || require('path');
+	var fs = fs || require('fs'),
+		files = fs.readdirSync(dir);
+	filelist = filelist || [];
+	files.forEach(function(file) {
+	  if (fs.statSync(path.join(dir, file)).isDirectory()) {
+		filelist = walkSync(path.join(dir, file), filelist);
+	  }
+	  if (filelist.length === 1) {
+		return filelist;
+	  }
+	  else {
+		filelist.push(file);
+	  }
+	});
+	return filelist;
+};
+
+//console.log(walkSync("config").join(""));
 
 let isEnglish = true;
 let labelsArr = [];
@@ -78,7 +104,7 @@ function createSegments() {
 		//parse each range into a separate object
 		let labelRange = readline.question("What is the range of the label and its links? (ex:B66:C85)");
 		let segment = excelToJson({
-			sourceFile: "test_config3.xlsx",
+			sourceFile: walkSync("config").join(""),
 			range: labelRange, //'B82:C86'
 			sheets: ['themeConfig Request']
 		});
@@ -188,7 +214,7 @@ function genIdString (labelsArr, itemLabels) {
 }
 //Format the urls based on correct snn url format
 function formatUrl(url) {
-	if(url === "undefined") {
+	if(url === undefined) {
 		return;
 	}
 	//if no bracket at beginning of url add one
@@ -213,16 +239,25 @@ function formatUrl(url) {
 	if(url[1] != "U") {
 		url = url.slice(0, 1) + "URL." + url.slice(1);
 	}
-	console.log(url.charAt(url.length - 1))
+	
 	console.log(url);
 	return url;
 }
-//formatUrl("[CORP_FUZEExp_JP_All3MProducts?N=5002385+8710669+8711017+8721561+3294803017&rt=r3")
+//formatUrl("[URL.CORP_FUZEExp_US_All3MProducts]~/All-3M-Products/Energy/Power-Generation/Solar-Energy/Solar-Energy-Films/?N=5002385+8709319+8711017+8719192+8730562+3290332707+3294857497&rt=r3")
 //console.log(formatUrl("URL.CORP_FUZEExp_US_All3MProducts~/All-3M-Products/Home-Care-Cleaning/Consumer/?N=5002385+8709316+8710658+8711017+3294857497&rt=r3"));
 // URL.CORP_FUZEExp_US_All3MProducts]~/All-3M-Products/Home-Care-Cleaning/Consumer/?N=5002385+8709316+8710658+8711017+3294857497&rt=r3
 
 //createSegments()
 //parseSsnObject(parsedSegments);
 //formatUrl("[URL.SGB_CommercialCleaning_IN_Resources_ResourcesLibrary]")
+
 setLanguage();
 
+// //run footer program if needed:
+const needFooter = readline.question("Is a footer needed for this request? (yes/no)");
+if (needFooter === "yes") {
+	footerParser.setLanguage();
+}
+else if (needFooter === "no") {
+	return;
+}
