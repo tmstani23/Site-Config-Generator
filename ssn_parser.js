@@ -3,12 +3,16 @@ const excelToJson = require('convert-excel-to-json');
 const readline = require('readline-sync');
 const chalk = require('chalk');
 const footerParser = require('./footer_parser.js');
-//requiring path and fs modules
-var path = path || require('path');
-var fs = fs || require('fs');
 
+let isEnglish = true;
+let labelsArr = [];
+let itemLabels = [];
+let idString = "";
+let ssnText = [];
+let parsedSegments = [];
 
-var walkSync = function(dir, filelist) {
+//add path that includes all files in/config to use as a variable in parseSegments
+exports.walkSync = function(dir, filelist) {
 	var path = path || require('path');
 	var fs = fs || require('fs'),
 		files = fs.readdirSync(dir);
@@ -27,65 +31,7 @@ var walkSync = function(dir, filelist) {
 	return filelist;
 };
 
-//console.log(walkSync("config").join(""));
 
-let isEnglish = true;
-let labelsArr = [];
-let itemLabels = [];
-let idString = "";
-let ssnText = [];
-
-//add path that includes all files in/config to use as a variable in parseSegments
-
-let parsedSegments = [ 
-	{"themeConfig Request":
-		[
-			{
-				"B":"製品",
-				"C":"(Provide link in this cell, only if no dropdown is desired)"},
-			{
-				"B":"ネクスケア™ 製品 / ばんそうこう・テープ製品",
-				"C":"[CORP_FUZEExp_JP_All3MProducts]?N=5002385+8709316+8711017+8711752+3294803017&rt=r3"},
-			{
-				"B":"フツロ™ 製品 / サポーター製品",
-				"C":"[CORP_FUZEExp_JP_All3MProducts]?N=5002385+8709316+8711017+8711744+3294803017&rt=r3"},
-			{
-				"B":"スキンケア製品",
-				"C":"[CBG_PersonalHealthCare_Skincare_JP]"},
-			{
-				"B":"すべて表示",
-				"C":"[CORP_FUZEExp_JP_All3MProducts]?N=5002385+8710669+8711017+8721561+3294803017&rt=r3"}
-		]
-	}, 
-	{"themeConfig Request":
-		[
-			{
-				"B":"ソリューション"},
-			{
-				"B":"おむつかぶれ対策",
-				"C":"[CBG_PersonalHealthCare_Solutions_DiaperRash_JP]"},
-			{
-				"B":"ハンドケア",
-				"C":"[CBG_PersonalHealthCare_Solutions_HandCare_JP]"},
-			{
-				"B":"すべて表示",
-				"C":"[CBG_PersonalHealthCare_Solutions_JP]"}
-		]
-	},
-	{"themeConfig Request":
-		[
-			{"B":"サポート"
-			},
-			{"B":"お問い合わせ",	
-			"C":"CBG_PersonalHealthCare_Support_ContactUs_JP"
-			}
-		]
-	}
-];
-
-// B46:C50
-// B51:C54
-// B55:C56
 //Set language variable to false if ssnLanguage = "no"
 const setLanguage = () => { 
 	//Take user input from console and save to a variable:
@@ -94,7 +40,7 @@ const setLanguage = () => {
 	return createSegments();
 }
 
-function createSegments() {
+let createSegments = function() {
 	parsedSegments = [];
 	
 	//Store number of labels to parse from ssn as a variable:
@@ -104,7 +50,7 @@ function createSegments() {
 		//parse each range into a separate object
 		let labelRange = readline.question("What is the range of the label and its links? (ex:B66:C85)");
 		let segment = excelToJson({
-			sourceFile: walkSync("config").join(""),
+			sourceFile: exports.walkSync("config").join(""),
 			range: labelRange, //'B82:C86'
 			sheets: ['themeConfig Request']
 		});
@@ -150,7 +96,7 @@ psn.manual.${label.substr(0,4).toLowerCase()}.name = ${label}`;
 						//set link name and url
 						let linkName = labelObj[i].B;
 						//format the url to fit standards
-						let linkUrl = formatUrl(labelObj[i].C);
+						let linkUrl = exports.formatUrl(labelObj[i].C);
 						//generate the remaining ssn text
 						genSsnText(label, linkName, linkUrl, i, item);
 					}
@@ -213,7 +159,7 @@ function genIdString (labelsArr, itemLabels) {
 	return idString;
 }
 //Format the urls based on correct snn url format
-function formatUrl(url) {
+exports.formatUrl = function (url) {
 	if(url === undefined) {
 		return;
 	}
@@ -243,20 +189,23 @@ function formatUrl(url) {
 	console.log(url);
 	return url;
 }
-//formatUrl("[URL.CORP_FUZEExp_US_All3MProducts]~/All-3M-Products/Energy/Power-Generation/Solar-Energy/Solar-Energy-Films/?N=5002385+8709319+8711017+8719192+8730562+3290332707+3294857497&rt=r3")
+//formatUrl("[URL.CORP_FUZEExp_PT_All3MProducts]?N=5002385+8709322+8711017&rt=r3")
 //console.log(formatUrl("URL.CORP_FUZEExp_US_All3MProducts~/All-3M-Products/Home-Care-Cleaning/Consumer/?N=5002385+8709316+8710658+8711017+3294857497&rt=r3"));
 // URL.CORP_FUZEExp_US_All3MProducts]~/All-3M-Products/Home-Care-Cleaning/Consumer/?N=5002385+8709316+8710658+8711017+3294857497&rt=r3
 
 //createSegments()
 //parseSsnObject(parsedSegments);
 //formatUrl("[URL.SGB_CommercialCleaning_IN_Resources_ResourcesLibrary]")
-
-setLanguage();
+const needSsn = readline.question("Is an SSN needed for this request? (yes/no)");
+if(needSsn === "yes"){
+	setLanguage();
+}
 
 // //run footer program if needed:
 const needFooter = readline.question("Is a footer needed for this request? (yes/no)");
 if (needFooter === "yes") {
-	footerParser.setLanguage();
+	
+	footerParser.setFooterLanguage();
 }
 else if (needFooter === "no") {
 	return;
