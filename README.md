@@ -1,7 +1,7 @@
 # Site Configuration Generator
 A tool used for parsing excel files into json objects and converting them to site configuration format.
 
-##Installation:
+## Installation:
 
 Clone the repo and take note of the install directory.
 
@@ -19,7 +19,7 @@ Type npm install convert-excel-to-json
 You should now have all the necessary dependencies.  Check your package.json file to verify.
 
 
-##Notes on usage:
+## Notes on usage:
 
 Copy the site config into the config folder.  Make sure there is only one file in the config folder at a time.
 
