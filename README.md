@@ -1,8 +1,6 @@
 # Site Configuration Generator
 A tool used for parsing excel files into json objects and converting them to site configuration format.
 
-##Under Development
-
 ##Installation
 Clone the repo and take note of the install directory.
 Make sure you have the latest version of node installed globally
@@ -24,5 +22,7 @@ When specifying the range from the excel file include the header label and links
 Configurations using logogram symbols will have their ssn text parsed as: item0,item1,item2 etc.
 Urls will be auto parsed according to the correct format but verify in case there are missing conditions.
     I will update as needed!
+    
+![Alt text](https://raw.githubusercontent.com/tmstani23/Site-Config-Generator/master/screenshots/ss1.png)
 
 
