@@ -13,27 +13,6 @@ let idString = "";
 let footerText = [];
 let parsedSegments = [];
 
-// var walkSync = function(dir, filelist) {
-// 	var path = path || require('path');
-// 	var fs = fs || require('fs'),
-// 		files = fs.readdirSync(dir);
-// 	filelist = filelist || [];
-// 	files.forEach(function(file) {
-// 	  if (fs.statSync(path.join(dir, file)).isDirectory()) {
-// 		filelist = walkSync(path.join(dir, file), filelist);
-// 	  }
-// 	  if (filelist.length === 1) {
-// 		return filelist;
-// 	  }
-// 	  else {
-// 		filelist.push(file);
-// 	  }
-// 	});
-// 	return filelist;
-// };
-// B82:C86
-// B110:C111
-
 
 //Set language variable to false if footer Language = "no"
 exports.setFooterLanguage = function() { 
@@ -53,7 +32,7 @@ function createFooterSegments() {
 		//parse each range into a separate object
 		let labelRange = readline.question("What is the range of the label and its links? (ex:B66:C85)");
 		let segment = excelToJson({
-			sourceFile: ssnParser.walkSync("config").join(""),
+			sourceFile: `config/${ssnParser.walkSync("config").join("")}`,
 			range: labelRange, //'B82:C86'
 			sheets: ['themeConfig Request']
 		});
@@ -111,7 +90,7 @@ footerText.push(`
 	genFooterIdString(labelsArr, itemLabels)
 	//join the final array and separate each array element with a new line
 	let parsedfooter = footerText.join("\n");
-	console.log(chalk.blue(parsedfooter));
+	console.log(chalk.green(parsedfooter));
 	return parsedfooter;
 	
 }
@@ -155,45 +134,4 @@ function genFooterIdString (labelsArr, itemLabels) {
 	return idString;
 }
 
-// //Format the urls based on correct snn url format
-// function formatUrl(url) {
-// 	//if no bracket at beginning of url add one
-//     if(url === undefined) {
-//         return;
-//     }
-//     if (url[0] !== "[") {
-// 		url = `[${url}`;
-// 	}
-// 	//if the url includes ?N and not ~ add a bracket at the end of the url
-// 	if (!url.includes("?N") && url.charAt(url.length - 1) != "]" && !url.includes("~")) {
-// 		url = `${url}]`;
-// 	}
-// 	//if the url includes ?N and not ]?N and not a ~ add a bracket before the ?N
-// 	if (url.includes("?N") && !url.includes("]?N") && !url.includes("~")) {
-// 		let insertBracketAt = url.indexOf("?N");
-// 		url = url.slice(0, insertBracketAt) + "]" + url.slice(insertBracketAt);
-// 	}
-// 	//if the url includes a ~ and not a bracket before the ~ add a bracket before the ~
-// 	if (url.includes("~") && !url.includes("]~")) {
-// 		let insertBracketAt = url.indexOf("~");
-// 		url = url.slice(0, insertBracketAt) + "]" + url.slice(insertBracketAt);
-// 	}
-// 	//If the second character of the url is not a U add URL starting at the second character
-// 	if(url[1] != "U") {
-// 		url = url.slice(0, 1) + "URL." + url.slice(1);
-// 	}
-// 	//console.log(url);
-// 	return url;
-// }
-
-
-//formatUrl("[CORP_FUZEExp_JP_All3MProducts?N=5002385+8710669+8711017+8721561+3294803017&rt=r3")
-//console.log(formatUrl("URL.CORP_FUZEExp_US_All3MProducts~/All-3M-Products/Home-Care-Cleaning/Consumer/?N=5002385+8709316+8710658+8711017+3294857497&rt=r3"));
-// URL.CORP_FUZEExp_US_All3MProducts]~/All-3M-Products/Home-Care-Cleaning/Consumer/?N=5002385+8709316+8710658+8711017+3294857497&rt=r3
-//parseSiteName();
-//createSegments()
-//parsefooterObject(parsedSegments);
-
-
-//formatUrl("Käyttökohteet")
 

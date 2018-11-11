@@ -44,13 +44,13 @@ let createSegments = function() {
 	parsedSegments = [];
 	
 	//Store number of labels to parse from ssn as a variable:
-	const numLabels = readline.question("How many labels are there?");
+	const numLabels = readline.question("How many labels are there? (3)");
 	//Parse each segment of the excel file based on the number of labels
 	for(let i=0; i<numLabels; i++) {
 		//parse each range into a separate object
 		let labelRange = readline.question("What is the range of the label and its links? (ex:B66:C85)");
 		let segment = excelToJson({
-			sourceFile: exports.walkSync("config").join(""),
+			sourceFile: `config/${exports.walkSync("config").join("")}`,
 			range: labelRange, //'B82:C86'
 			sheets: ['themeConfig Request']
 		});
@@ -109,13 +109,8 @@ psn.manual.${label.substr(0,4).toLowerCase()}.name = ${label}`;
 	genIdString(labelsArr, itemLabels)
 	//join the final array and separate each array element with a new line
 	let parsedSsn = ssnText.join("\n");
-	
 	console.log(chalk.blue(parsedSsn));
-	
-	
-	//console.log(labelsArr);
-	//console.log(namesArr);
-	//console.log(linksArr);
+
 	return parsedSsn;
 	
 }
@@ -189,12 +184,6 @@ exports.formatUrl = function (url) {
 	console.log(url);
 	return url;
 }
-//formatUrl("[URL.CORP_FUZEExp_PT_All3MProducts]?N=5002385+8709322+8711017&rt=r3")
-//console.log(formatUrl("URL.CORP_FUZEExp_US_All3MProducts~/All-3M-Products/Home-Care-Cleaning/Consumer/?N=5002385+8709316+8710658+8711017+3294857497&rt=r3"));
-// URL.CORP_FUZEExp_US_All3MProducts]~/All-3M-Products/Home-Care-Cleaning/Consumer/?N=5002385+8709316+8710658+8711017+3294857497&rt=r3
-
-//createSegments()
-//parseSsnObject(parsedSegments);
 //formatUrl("[URL.SGB_CommercialCleaning_IN_Resources_ResourcesLibrary]")
 const needSsn = readline.question("Is an SSN needed for this request? (yes/no)");
 if(needSsn === "yes"){
@@ -204,7 +193,7 @@ if(needSsn === "yes"){
 // //run footer program if needed:
 const needFooter = readline.question("Is a footer needed for this request? (yes/no)");
 if (needFooter === "yes") {
-	
+	//call footer parser set language function chain
 	footerParser.setFooterLanguage();
 }
 else if (needFooter === "no") {
