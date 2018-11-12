@@ -43,4 +43,4 @@ I will update as needed!
     
 ![Alt text](https://raw.githubusercontent.com/tmstani23/Site-Config-Generator/master/screenshots/ss1.png)
 
-
+![Alt text](https://raw.githubusercontent.com/tmstani23/Site-Config-Generator/master/screenshots/ss2.png)
