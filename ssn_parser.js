@@ -181,7 +181,7 @@ exports.formatUrl = function (url) {
 		url = url.slice(0, 1) + "URL." + url.slice(1);
 	}
 	
-	console.log(url);
+	//console.log(url);
 	return url;
 }
 //formatUrl("[URL.SGB_CommercialCleaning_IN_Resources_ResourcesLibrary]")
