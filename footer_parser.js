@@ -60,8 +60,6 @@ function parseFooterObject(parsedSegments) {
 					//save item labels to an array
 					itemLabels.push(item);
 					//add footer label identifier to each section
-footerText.push(`
-#${itemLabels[index]}`)
 				}
 				
 				//Add the header labels to a labels array
@@ -125,7 +123,7 @@ function genFooterIdString (labelsArr, itemLabels) {
 	}
 	else if (isEnglish === false) {
 		idString = `footer.site.categories = ${itemLabels.map(
-			(val) => `${val}|${val.charAt(0).toUpperCase() + val.slice(1)}`)}`;
+			(val, index) => `${val}|${labelsArr[index].charAt(0).toUpperCase() + labelsArr[index].slice(1)}`)}`;
 	}
 
 	//Save id string at the beginning of footerText array
