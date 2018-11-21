@@ -20,8 +20,11 @@ You should now have all the necessary dependencies.  Check your package.json fil
 
 
 ## Notes on usage:
+Logogram symbols will not display in windows console.  Use linux terminal set to utf8 or use vsCode integrated terminal.
 
 Copy the site config into the config folder.  Make sure there is only one file in the config folder at a time.
+
+Make sure the first sheet in the excel file is called: themeConfig Request.
 
 The program scans this folder and returns the first file found here to parse.
     
