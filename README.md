@@ -9,18 +9,12 @@ Make sure you have the latest version of node installed globally
 
 Navigate in the terminal to where you cloned this repo.
 
-Type npm init in terminal to initialize the package. 
-
-You should now have a package.json file with a section showing dependencies and their version.
-
-Type npm install chalk and npm install readline-sync.
-
-Type npm install convert-excel-to-json 
+Type npm install
 You should now have all the necessary dependencies.  Check your package.json file to verify.
 
 
 ## Notes on usage:
-Logogram symbols will not display in windows console.  Use linux terminal set to utf8 or use vsCode integrated terminal.
+Logogram symbols will not display in windows console.  Use windows powershell or linux terminal and set to utf8 or use vsCode integrated terminal.
 
 Copy the site config into the config folder.  Make sure there is only one file in the config folder at a time.
 

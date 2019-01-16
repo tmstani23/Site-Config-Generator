@@ -180,6 +180,10 @@ exports.formatUrl = function (url) {
 	if(url[1] != "U") {
 		url = url.slice(0, 1) + "URL." + url.slice(1);
 	}
+	//If url ends with "r3]" remove the "]"
+	if(url.includes("rt=r3") && url.charAt(url.length - 1) === "]") {
+		url = url.slice(0, url.length - 1);
+	}
 	
 	//console.log(url);
 	return url;
