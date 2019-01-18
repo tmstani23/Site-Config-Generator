@@ -109,7 +109,7 @@ psn.manual.${label.substr(0,4).toLowerCase()}.name = ${label}`;
 	genIdString(labelsArr, itemLabels)
 	//join the final array and separate each array element with a new line
 	let parsedSsn = ssnText.join("\n");
-	console.log(chalk.blue(parsedSsn));
+	console.log(chalk.green(parsedSsn));
 
 	return parsedSsn;
 	
