@@ -156,7 +156,11 @@ function genIdString (labelsArr, itemLabels) {
 //Format the urls based on correct snn url format
 exports.formatUrl = function (url) {
 	if(url === undefined) {
-		return;
+		return url = "";
+	}
+	// if its a www or https url return the url without modification
+	if(url.includes("www.") || url.includes("https")) {
+		return url
 	}
 	//if no bracket at beginning of url add one
 	if (url[0] !== "[") {
