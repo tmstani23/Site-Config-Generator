@@ -81,7 +81,6 @@ psn.manual.${label.substr(0,4).toLowerCase()}.name = ${label}`;
 					item = `item${index}`;
 					labelText = `psn.manual.item${index}.name = ${label}`;
 					labelTextUrl = `psn.manual.item${index}.url = #
-					
 					`;
 					itemLabels.push(item);
 				}
@@ -160,7 +159,7 @@ exports.formatUrl = function (url) {
 	}
 	// if its a www or https url return the url without modification
 	if(url.includes("www.") || url.includes("https")) {
-		return url
+		return url;
 	}
 	//if no bracket at beginning of url add one
 	if (url[0] !== "[") {
