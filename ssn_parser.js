@@ -80,8 +80,7 @@ psn.manual.${label.substr(0,4).toLowerCase()}.name = ${label}`;
 				if(isEnglish === false) {
 					item = `item${index}`;
 					labelText = `psn.manual.item${index}.name = ${label}`;
-					labelTextUrl = `psn.manual.item${index}.url = #
-					`;
+					labelTextUrl = `psn.manual.item${index}.url = #`;
 					itemLabels.push(item);
 				}
 				//Add the header labels to a labels array
@@ -166,7 +165,7 @@ exports.formatUrl = function (url) {
 		url = `[${url}`;
 	}
 	//if the url includes ?N and not ~ add a bracket at the end of the url
-	if (!url.includes("?N") && url.charAt(url.length - 1) != "]" && !url.includes("~")) {
+	if (!url.includes("?N") && !url.includes("]?") && url.charAt(url.length - 1) != "]" && !url.includes("~")) {
 		url = `${url}]`;
 	}
 	//if the url includes ?N and not ]?N and not a ~ add a bracket before the ?N
@@ -187,7 +186,8 @@ exports.formatUrl = function (url) {
 	if(url.includes("rt=r3") && url.charAt(url.length - 1) === "]") {
 		url = url.slice(0, url.length - 1);
 	}
-	
+	//Remove all whitespaces in the url
+	url = url.replace(/\s/g, '')
 	//console.log(url);
 	return url;
 }
